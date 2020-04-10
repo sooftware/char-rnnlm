@@ -1,18 +1,17 @@
 import os
 import time
 import torch
-import logging, sys
 import torch.nn as nn
 import queue
 import math
 from random import random
 from torch import optim
 from torchtext import data
-from src.config import Config
-from src.data_loader import KoreanDataset, load_scripts, BaseDataLoader
-from src.definition import char2id, logger, SOS_token, EOS_token, PAD_token
-from src.lm import LanguageModel
-from src.trainer import supervised_train
+from package.config import Config
+from package.data_loader import KoreanDataset, load_scripts, BaseDataLoader
+from package.definition import char2id, logger, SOS_token, EOS_token, PAD_token
+from package.trainer import supervised_train
+from model import LanguageModel
 
 
 if __name__ == '__main__':
@@ -23,17 +22,17 @@ if __name__ == '__main__':
     logger.info("PyTorch version : %s" % (torch.__version__))
 
     config = Config(
-        use_cuda=True,
-        hidden_size=256,
-        dropout_p=0.5,
-        n_layers=5,
-        batch_size=32,
-        max_epochs=40,
-        lr=0.0001,
-        teacher_forcing=1.0,
-        seed=1,
-        max_len=428,
-        worker_num=1
+        use_cuda = True,
+        hidden_size = 512,
+        dropout_p = 0.5,
+        n_layers = 4,
+        batch_size = 32,
+        max_epochs = 40,
+        lr = 0.0001,
+        teacher_forcing = 1.0,
+        seed = 1,
+        max_len = 428,
+        worker_num = 1
     )
 
     random.seed(config.seed)
@@ -43,15 +42,15 @@ if __name__ == '__main__':
     device = torch.device('cuda' if cuda else 'cpu')
 
     model = LanguageModel(
-        n_class=len(char2id),
-        n_layers=4,
-        wordvec_size=256,
-        hidden_size=512,
-        dropout_p=0.5,
-        max_length=428,
-        sos_id=SOS_token,
-        eos_id=EOS_token,
-        device=device
+        n_class = len(char2id),
+        n_layers = config.n_layers,
+        wordvec_size = config.wordvec_size,
+        hidden_size = config.hidden_size,
+        dropout_p = config.dropout_p,
+        max_length = config.max_len,
+        sos_id = SOS_token,
+        eos_id = EOS_token,
+        device = device
     )
     model.flatten_parameters()
     model = nn.DataParallel(model).to(device)

@@ -1,7 +1,7 @@
 import threading
 from torch.utils.data import Dataset
-from src.train import logger
-from src.utils import get_label, get_input
+from package.definition import logger
+from package.utils import get_label, get_input
 import csv
 import random
 import pandas as pd

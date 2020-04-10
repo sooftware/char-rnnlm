@@ -13,7 +13,7 @@ class LanguageModel(nn.Module):
         self.eos_id = eos_id
         self.sos_id = sos_id
         self.hidden_size = hidden_size
-        self.embedding = nn.Embedding(n_class, self.wordvec_size)
+        self.embedding = nn.Embedding(n_class, wordvec_size)
         self.n_layers = n_layers
         self.input_dropout = nn.Dropout(p=dropout_p)
         self.out = nn.Linear(self.hidden_size, n_class)
