@@ -3,8 +3,6 @@
 class Config():
     def __init__(self,
                  use_cuda = True,
-                 pack_by_length = True,
-                 augment_ratio = 1.0,
                  hidden_size = 512,
                  wordvec_size = 256,
                  dropout_p = 0.5,
@@ -18,8 +16,6 @@ class Config():
                  worker_num=1
                  ):
         self.use_cuda = use_cuda
-        self.pack_by_length = pack_by_length
-        self.augment_ratio = augment_ratio
         self.hidden_size = hidden_size
         self.wordvec_size = wordvec_size
         self.dropout_p = dropout_p

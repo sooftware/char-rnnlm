@@ -7,7 +7,7 @@ import torch.nn.functional as F
 class LanguageModel(nn.Module):
     def __init__(self, n_class, n_layers, wordvec_size, hidden_size, dropout_p, max_length, sos_id, eos_id, device):
         super(LanguageModel, self).__init__()
-        self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p, bidirectional=False).to(device)
+        self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p).to(device)
         self.max_length = max_length
         self.eos_id = eos_id
         self.sos_id = sos_id
@@ -40,7 +40,7 @@ class LanguageModel(nn.Module):
         batch_size = inputs.size(0)
         max_length = inputs.size(1) - 1  # minus the start of sequence symbol
 
-        hypotheses = list()
+        decode_result = list()
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
         hidden = torch.zeros(self.n_layers, batch_size, self.hidden_size)
@@ -55,20 +55,22 @@ class LanguageModel(nn.Module):
 
             for di in range(predicted_softmax.size(1)):
                 step_output = predicted_softmax[:, di, :]
-                hypotheses.append(step_output)
+                decode_result.append(step_output)
 
         else:
-            input_ = inputs[:, 0].unsqueeze(1)
+            input = inputs[:, 0].unsqueeze(1)
             for di in range(max_length):
                 predicted_softmax, hidden = self.forward_step(
-                    input=input_,
+                    input=input,
                     hidden=hidden,
                     function=function
                 )
 
                 step_output = predicted_softmax.squeeze(1)
-                hypotheses.append(step_output)
-                input_ = hypotheses[-1].topk(1)[1]
+                decode_result.append(step_output)
+                input = decode_result[-1].topk(1)[1]
 
-            logits = torch.stack(hypotheses, dim=1).to(self.device)
+            logits = torch.stack(decode_result, dim=1).to(self.device)
             y_hats = logits.max(-1)[1]
+
+        return y_hats, logits

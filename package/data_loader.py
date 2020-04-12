@@ -56,7 +56,6 @@ class BaseDataLoader(threading.Thread):
 
         logger.debug('loader %d stop' % (self.thread_id))
 
-
     def count(self):
         return math.ceil(self.dataset_count / self.batch_size)
 
@@ -97,7 +96,6 @@ def _collate_fn(batch):
         targets[x].narrow(0, 0, len(target)).copy_(torch.LongTensor(target))
 
     return seqs, targets, seq_lengths, target_lengths
-
 
 
 class BaseDataset(Dataset):

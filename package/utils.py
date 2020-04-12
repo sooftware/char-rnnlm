@@ -11,6 +11,7 @@ def get_label(script, eos_id):
 
     return label
 
+
 def get_input(script, sos_id):
     tokens = script.split(' ')
 
@@ -20,6 +21,7 @@ def get_input(script, sos_id):
         label.append(int(token))
 
     return label
+
 
 def get_distance(targets, y_hats, id2char, eos_id):
     total_dist = 0
@@ -35,6 +37,7 @@ def get_distance(targets, y_hats, id2char, eos_id):
         total_length += length
 
     return total_dist, total_length
+
 
 def label_to_string(labels, id2char, eos_id):
     if len(labels.shape) == 1:
@@ -59,6 +62,7 @@ def label_to_string(labels, id2char, eos_id):
     else:
         raise ValueError("shape Error !!")
 
+
 def char_distance(target, y_hat):
     target = target.replace(' ', '')
     y_hat = y_hat.replace(' ', '')
@@ -67,6 +71,7 @@ def char_distance(target, y_hat):
     length = len(target.replace(' ', ''))
 
     return dist, length
+
 
 def get_distance(targets, y_hats, id2char, eos_id):
     total_dist = 0
@@ -82,6 +87,7 @@ def get_distance(targets, y_hats, id2char, eos_id):
         total_length += length
 
     return total_dist, total_length
+
 
 def save_epoch_result(train_result, valid_result):
     """ save result of training (unit : epoch) """

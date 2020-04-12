@@ -10,6 +10,7 @@ from torchtext import data
 from package.config import Config
 from package.data_loader import BaseDataset, load_dataset, BaseDataLoader
 from package.definition import char2id, logger, SOS_token, EOS_token, PAD_token
+from package.loss import LabelSmoothingLoss
 from package.trainer import supervised_train
 from model import LanguageModel
 
@@ -57,7 +58,7 @@ if __name__ == '__main__':
     model = nn.DataParallel(model).to(device)
 
     optimizer = optim.Adam(model.module.parameters(), lr=config.lr)
-    criterion = nn.CrossEntropyLoss(reduction='sum', ignore_index=PAD_token).to(device)
+    criterion = LabelSmoothingLoss(ignore_index=PAD_token).to(device)
 
     dataset = load_dataset('./data/ko_dataset.csv', encoding='utf-8')
     total_time_step = math.ceil(len(dataset) / config.batch_size)
@@ -69,7 +70,7 @@ if __name__ == '__main__':
     train_begin = time.time()
 
     for epoch in range(config.max_epochs):
-        train_queue = queue.Queue(2)
+        train_queue = queue.Queue(config.worker_num << 1)
         train_dataset.shuffle()
 
         train_loader = BaseDataLoader(train_dataset, queue, config.batch_size, 0)
@@ -92,5 +93,3 @@ if __name__ == '__main__':
         logger.info('Epoch %d (Training) Loss %0.4f CER %0.4f' % (epoch, train_loss, train_cer))
 
         train_loader.join()
-
-
