@@ -8,7 +8,7 @@ from random import random
 from torch import optim
 from torchtext import data
 from package.config import Config
-from package.data_loader import KoreanDataset, load_scripts, BaseDataLoader
+from package.data_loader import BaseDataset, load_dataset, BaseDataLoader
 from package.definition import char2id, logger, SOS_token, EOS_token, PAD_token
 from package.trainer import supervised_train
 from model import LanguageModel
@@ -28,6 +28,7 @@ if __name__ == '__main__':
         n_layers = 4,
         batch_size = 32,
         max_epochs = 40,
+        wordvec_size = 256,
         lr = 0.0001,
         teacher_forcing = 1.0,
         seed = 1,
@@ -58,10 +59,10 @@ if __name__ == '__main__':
     optimizer = optim.Adam(model.module.parameters(), lr=config.lr)
     criterion = nn.CrossEntropyLoss(reduction='sum', ignore_index=PAD_token).to(device)
 
-    scripts = load_scripts('./data/ko_dataset.csv', encoding='utf-8')
-    total_time_step = math.ceil(len(scripts) / config.batch_size)
+    dataset = load_dataset('./data/ko_dataset.csv', encoding='utf-8')
+    total_time_step = math.ceil(len(dataset) / config.batch_size)
 
-    train_dataset = KoreanDataset(scripts, SOS_token, EOS_token, config.batch_size)
+    train_dataset = BaseDataset(dataset, SOS_token, EOS_token, config.batch_size)
     train_iterator = data.BucketIterator(train_dataset, batch_size=config.batch_size, device=device, shuffle=True)
 
     logger.info('start')
@@ -71,7 +72,7 @@ if __name__ == '__main__':
         train_queue = queue.Queue(2)
         train_dataset.shuffle()
 
-        train_loader = BaseDataLoader(scripts, queue, config.batch_size, 0)
+        train_loader = BaseDataLoader(train_dataset, queue, config.batch_size, 0)
         train_loader.start()
 
         train_loss, train_cer = supervised_train(

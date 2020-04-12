@@ -33,7 +33,7 @@ class KoNPron:
 
                 elif ch == '.':
                     if idx + 1 < total_len and idx > 0:
-                        if sentence[idx - 1] in self.base_digit and sentenc[idx + 1] in self.base_digit:
+                        if sentence[idx - 1] in self.base_digit and sentence[idx + 1] in self.base_digit:
                             point_count += 1
 
                             if point_count == 1:

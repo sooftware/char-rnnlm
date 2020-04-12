@@ -7,8 +7,7 @@ import torch.nn.functional as F
 class LanguageModel(nn.Module):
     def __init__(self, n_class, n_layers, wordvec_size, hidden_size, dropout_p, max_length, sos_id, eos_id, device):
         super(LanguageModel, self).__init__()
-        self.rnn_cell = nn.GRU
-        self.rnn = self.rnn_cell(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p, bidirectional=False).to(device)
+        self.rnn = nn.LSTM(hidden_size, hidden_size, n_layers, batch_first=True, dropout=dropout_p, bidirectional=False).to(device)
         self.max_length = max_length
         self.eos_id = eos_id
         self.sos_id = sos_id

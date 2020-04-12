@@ -84,7 +84,7 @@ def _collate_fn(batch):
     seqs = torch.zeros(batch_size, max_seq_size, feat_size)
 
     targets = torch.zeros(batch_size, max_target_size).to(torch.long)
-    from src.train import PAD_token
+    from package.definition import PAD_token
     targets.fill_(PAD_token)
 
     for x in range(batch_size):
@@ -100,21 +100,21 @@ def _collate_fn(batch):
 
 
 
-class KoreanDataset(Dataset):
-    def __init__(self, scripts, sos_id, eos_id, batch_size):
-        self.scripts = scripts
+class BaseDataset(Dataset):
+    def __init__(self, dataset, sos_id, eos_id, batch_size):
+        self.dataset = dataset
         self.sos_id = sos_id
         self.eos_id = eos_id
         self.batch_size = batch_size
 
     def get_item(self, index):
-        input = get_input(self.scripts[index], self.sos_id)
-        label = get_label(self.scripts[index], self.eos_id)
+        input = get_input(self.dataset[index], self.sos_id)
+        label = get_label(self.dataset[index], self.eos_id)
 
         return input, label
 
     def shuffle(self):
-        random.shuffle(self.scripts)
+        random.shuffle(self.dataset)
 
 
 def load_label(label_path, encoding='utf-8'):
@@ -132,6 +132,6 @@ def load_label(label_path, encoding='utf-8'):
     return char2id, id2char
 
 
-def load_scripts(filepath, encoding='utf-8'):
-    scripts = list(pd.read_csv(filepath, encoding=encoding)['ko'])
-    return scripts
+def load_dataset(filepath, encoding='utf-8'):
+    dataset = list(pd.read_csv(filepath, encoding=encoding)['ko'])
+    return dataset
