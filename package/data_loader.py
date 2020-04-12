@@ -12,6 +12,7 @@ import math
 class BaseDataLoader(threading.Thread):
     def __init__(self, dataset, queue, batch_size, thread_id):
         threading.Thread.__init__(self)
+        self.collate_fn = _collate_fn
         self.dataset = dataset
         self.batch_size = batch_size
         self.queue = queue
@@ -130,6 +131,6 @@ def load_label(label_path, encoding='utf-8'):
     return char2id, id2char
 
 
-def load_dataset(filepath, encoding='utf-8'):
-    dataset = list(pd.read_csv(filepath, encoding=encoding)['ko'])
-    return dataset
+def load_corpus(filepath, encoding='utf-8'):
+    corpus = list(pd.read_csv(filepath, encoding=encoding)['ko'])
+    return corpus

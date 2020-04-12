@@ -1,18 +1,16 @@
-
-
 class Config():
     def __init__(self,
-                 use_cuda = True,
-                 hidden_size = 512,
-                 wordvec_size = 256,
-                 dropout_p = 0.5,
-                 n_layers = 4,
-                 batch_size = 32,
-                 max_epochs = 40,
-                 lr = 0.0001,
-                 teacher_forcing = 1.0,
-                 seed = 1,
-                 max_len = 428,
+                 use_cuda=True,
+                 hidden_size=512,
+                 wordvec_size=256,
+                 dropout_p=0.5,
+                 n_layers=4,
+                 batch_size=32,
+                 max_epochs=40,
+                 lr=0.0001,
+                 teacher_forcing=1.0,
+                 seed=1,
+                 max_len=428,
                  worker_num=1
                  ):
         self.use_cuda = use_cuda

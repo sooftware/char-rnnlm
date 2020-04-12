@@ -5,6 +5,7 @@ from package.utils import get_distance, save_step_result
 
 train_step_result = {'loss': [], 'cer': []}
 
+
 def supervised_train(model, queue, criterion, optimizer, device, print_time_step, teacher_forcing_ratio, worker_num,
                      total_time_step, epoch, train_begin):
     total_loss = 0.

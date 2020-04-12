@@ -70,7 +70,7 @@ class LanguageModel(nn.Module):
                 decode_result.append(step_output)
                 input = decode_result[-1].topk(1)[1]
 
-            logits = torch.stack(decode_result, dim=1).to(self.device)
-            y_hats = logits.max(-1)[1]
+        logits = torch.stack(decode_result, dim=1).to(self.device)
+        y_hats = logits.max(-1)[1]
 
         return y_hats, logits

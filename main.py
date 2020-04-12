@@ -8,7 +8,7 @@ from random import random
 from torch import optim
 from torchtext import data
 from package.config import Config
-from package.data_loader import BaseDataset, load_dataset, BaseDataLoader
+from package.data_loader import BaseDataset, load_corpus, BaseDataLoader
 from package.definition import char2id, logger, SOS_token, EOS_token, PAD_token
 from package.loss import LabelSmoothingLoss
 from package.trainer import supervised_train
@@ -23,18 +23,18 @@ if __name__ == '__main__':
     logger.info("PyTorch version : %s" % (torch.__version__))
 
     config = Config(
-        use_cuda = True,
-        hidden_size = 512,
-        dropout_p = 0.5,
-        n_layers = 4,
-        batch_size = 32,
-        max_epochs = 40,
-        wordvec_size = 256,
-        lr = 0.0001,
-        teacher_forcing = 1.0,
-        seed = 1,
-        max_len = 428,
-        worker_num = 1
+        use_cuda=True,
+        hidden_size=512,
+        dropout_p=0.5,
+        n_layers=4,
+        batch_size=32,
+        max_epochs=40,
+        wordvec_size=256,
+        lr=0.0001,
+        teacher_forcing=1.0,
+        seed=1,
+        max_len=428,
+        worker_num=1
     )
 
     random.seed(config.seed)
@@ -44,27 +44,26 @@ if __name__ == '__main__':
     device = torch.device('cuda' if cuda else 'cpu')
 
     model = LanguageModel(
-        n_class = len(char2id),
-        n_layers = config.n_layers,
-        wordvec_size = config.wordvec_size,
-        hidden_size = config.hidden_size,
-        dropout_p = config.dropout_p,
-        max_length = config.max_len,
-        sos_id = SOS_token,
-        eos_id = EOS_token,
-        device = device
+        n_class=len(char2id),
+        n_layers=config.n_layers,
+        wordvec_size=config.wordvec_size,
+        hidden_size=config.hidden_size,
+        dropout_p=config.dropout_p,
+        max_length=config.max_len,
+        sos_id=SOS_token,
+        eos_id=EOS_token,
+        device=device
     )
     model.flatten_parameters()
     model = nn.DataParallel(model).to(device)
 
     optimizer = optim.Adam(model.module.parameters(), lr=config.lr)
-    criterion = LabelSmoothingLoss(ignore_index=PAD_token).to(device)
+    criterion = LabelSmoothingLoss(len(char2id), ignore_index=PAD_token).to(device)
 
-    dataset = load_dataset('./data/ko_dataset.csv', encoding='utf-8')
-    total_time_step = math.ceil(len(dataset) / config.batch_size)
+    corpus = load_corpus('./data/kor_corpus.csv', encoding='utf-8')
+    total_time_step = math.ceil(len(corpus) / config.batch_size)
 
-    train_dataset = BaseDataset(dataset, SOS_token, EOS_token, config.batch_size)
-    train_iterator = data.BucketIterator(train_dataset, batch_size=config.batch_size, device=device, shuffle=True)
+    train_dataset = BaseDataset(corpus, SOS_token, EOS_token, config.batch_size)
 
     logger.info('start')
     train_begin = time.time()

@@ -1,6 +1,7 @@
 import Levenshtein as Lev
 import pandas as pd
 
+
 def get_label(script, eos_id):
     tokens = script.split(' ')
 
@@ -71,22 +72,6 @@ def char_distance(target, y_hat):
     length = len(target.replace(' ', ''))
 
     return dist, length
-
-
-def get_distance(targets, y_hats, id2char, eos_id):
-    total_dist = 0
-    total_length = 0
-
-    for (target, y_hat) in zip(targets, y_hats):
-        script = label_to_string(target, id2char, eos_id)
-        pred = label_to_string(y_hat, id2char, eos_id)
-
-        dist, length = char_distance(script, pred)
-
-        total_dist += dist
-        total_length += length
-
-    return total_dist, total_length
 
 
 def save_epoch_result(train_result, valid_result):
