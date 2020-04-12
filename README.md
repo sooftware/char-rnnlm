@@ -5,7 +5,7 @@
   
 ## Intro
   
-This is a project for Character-level Recurrent Neural Network Language Model (RNN-LM) implemented in [Pytorch](pytorch.org).  
+This is a project for Character-level Recurrent Neural Network Language Model (Rnnlm) implemented in [Pytorch](pytorch.org).  
 This language model can be combined with tasks such as speech recognition or machine translation etc...    
 We appreciate any kind of feedback or contribution.
   
