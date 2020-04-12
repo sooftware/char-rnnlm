@@ -9,7 +9,7 @@ This is a project for Character-level Recurrent Neural Network Language Model (R
 This language model can be combined with tasks such as speech recognition or machine translation etc...    
 We appreciate any kind of feedback or contribution.
   
-<img src="https://miro.medium.com/max/3584/0*9LxR_80giSfC-a9N.png" width=620>  
+<img src="https://user-images.githubusercontent.com/42150335/79066605-39189c00-7cf4-11ea-8d92-971a360f3644.png" width=620>  
   
 ## Troubleshoots and Contributing
   
