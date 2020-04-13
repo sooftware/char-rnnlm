@@ -40,7 +40,7 @@ class LanguageModel(nn.Module):
         batch_size = inputs.size(0)
         max_length = inputs.size(1) - 1  # minus the start of sequence symbol
 
-        decode_result = list()
+        outputs = list()
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
         hidden = torch.zeros(self.n_layers, batch_size, self.hidden_size)
@@ -55,7 +55,7 @@ class LanguageModel(nn.Module):
 
             for di in range(predicted_softmax.size(1)):
                 step_output = predicted_softmax[:, di, :]
-                decode_result.append(step_output)
+                outputs.append(step_output)
 
         else:
             input = inputs[:, 0].unsqueeze(1)
@@ -67,10 +67,7 @@ class LanguageModel(nn.Module):
                 )
 
                 step_output = predicted_softmax.squeeze(1)
-                decode_result.append(step_output)
-                input = decode_result[-1].topk(1)[1]
+                outputs.append(step_output)
+                input = outputs[-1].topk(1)[1]
 
-        logits = torch.stack(decode_result, dim=1).to(self.device)
-        y_hats = logits.max(-1)[1]
-
-        return y_hats, logits
+        return outputs

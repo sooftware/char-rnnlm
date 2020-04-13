@@ -6,11 +6,10 @@ import queue
 import math
 from random import random
 from torch import optim
-from torchtext import data
 from package.config import Config
-from package.data_loader import BaseDataset, load_corpus, BaseDataLoader
+from package.data_loader import Dataset, load_corpus, DataLoader
 from package.definition import char2id, logger, SOS_token, EOS_token, PAD_token
-from package.loss import LabelSmoothingLoss
+from package.loss import Perplexity
 from package.trainer import supervised_train
 from model import LanguageModel
 
@@ -57,13 +56,19 @@ if __name__ == '__main__':
     model.flatten_parameters()
     model = nn.DataParallel(model).to(device)
 
+    for param in model.parameters():
+        param.data.uniform_(-0.08, 0.08)
+
+    # Prepare loss
+    weight = torch.ones(len(char2id))
+    perplexity = Perplexity(weight, PAD_token)
+
     optimizer = optim.Adam(model.module.parameters(), lr=config.lr)
-    criterion = LabelSmoothingLoss(len(char2id), ignore_index=PAD_token).to(device)
 
     corpus = load_corpus('./data/kor_corpus.csv', encoding='utf-8')
     total_time_step = math.ceil(len(corpus) / config.batch_size)
 
-    train_dataset = BaseDataset(corpus, SOS_token, EOS_token, config.batch_size)
+    train_dataset = Dataset(corpus, SOS_token, EOS_token, config.batch_size)
 
     logger.info('start')
     train_begin = time.time()
@@ -72,23 +77,23 @@ if __name__ == '__main__':
         train_queue = queue.Queue(config.worker_num << 1)
         train_dataset.shuffle()
 
-        train_loader = BaseDataLoader(train_dataset, queue, config.batch_size, 0)
+        train_loader = DataLoader(train_dataset, queue, config.batch_size, 0)
         train_loader.start()
 
-        train_loss, train_cer = supervised_train(
+        train_loss = supervised_train(
             model=model,
+            queue=train_queue,
             total_time_step=total_time_step,
             train_begin=train_begin,
-            queue=train_queue,
-            criterion=criterion,
+            perplexity=perplexity,
             optimizer=optimizer,
             device=device,
-            print_time_step=10,
+            print_every=10,
             teacher_forcing_ratio=config.teacher_forcing,
             worker_num=config.worker_num
         )
 
         torch.save(model, "./data/epoch%s.pt" % str(epoch))
-        logger.info('Epoch %d (Training) Loss %0.4f CER %0.4f' % (epoch, train_loss, train_cer))
+        logger.info('Epoch %d (Training) Loss %0.4f' % (epoch, train_loss))
 
         train_loader.join()

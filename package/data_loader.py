@@ -9,7 +9,7 @@ import torch
 import math
 
 
-class BaseDataLoader(threading.Thread):
+class DataLoader(threading.Thread):
     def __init__(self, dataset, queue, batch_size, thread_id):
         threading.Thread.__init__(self)
         self.collate_fn = _collate_fn
@@ -99,7 +99,7 @@ def _collate_fn(batch):
     return seqs, targets, seq_lengths, target_lengths
 
 
-class BaseDataset(Dataset):
+class Dataset(Dataset):
     def __init__(self, dataset, sos_id, eos_id, batch_size):
         self.dataset = dataset
         self.sos_id = sos_id
