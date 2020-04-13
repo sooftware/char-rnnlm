@@ -18,7 +18,7 @@ I recommend creating a new virtual environment for this project (using virtualen
 ### Prerequisites
   
 * Numpy: `pip install numpy` (Refer [here](https://github.com/numpy/numpy) for problem installing Numpy).
-* Pandas: `pip install pandas` (Refer [here](https://github.com/pandas-dev/pandas) for problem installing Numpy)
+* Pandas: `pip install pandas` (Refer [here](https://github.com/pandas-dev/pandas) for problem installing Pandas)
 * PyTorch: Refer to [PyTorch website](http://pytorch.org/) to install the version w.r.t. your environment.
   
   
