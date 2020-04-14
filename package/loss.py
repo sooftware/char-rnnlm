@@ -97,7 +97,7 @@ class NLLLoss(Loss):
 
         super(NLLLoss, self).__init__(
             self._NAME,
-            nn.NLLLoss(weight=weight, size_average=size_average))
+            nn.NLLLoss(weight=weight, reduction='sum'))
 
     def get_loss(self):
         if isinstance(self.acc_loss, int):
@@ -126,11 +126,12 @@ class Perplexity(NLLLoss):
     _NAME = "Perplexity"
     _MAX_EXP = 100
 
-    def __init__(self, weight=None, mask=None):
+    def __init__(self, weight=None, mask=None, device=None):
         super(Perplexity, self).__init__(weight=weight, mask=mask, size_average=False)
+        self.device = device
 
     def eval_batch(self, outputs, target):
-        self.acc_loss += self.criterion(outputs, target)
+        self.acc_loss += self.criterion(outputs, target).to(self.device)
         if self.mask is None:
             self.norm_term += np.prod(target.size())
         else:

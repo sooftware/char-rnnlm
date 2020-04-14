@@ -1,8 +1,9 @@
 import Levenshtein as Lev
+import torch
 
 
 def get_label(script, eos_id):
-    tokens = script.split(' ')
+    tokens = script.split()
 
     label = list()
     for token in tokens:
@@ -13,30 +14,14 @@ def get_label(script, eos_id):
 
 
 def get_input(script, sos_id):
-    tokens = script.split(' ')
+    tokens = script.split()
 
     label = list()
     label.append(int(sos_id))
     for token in tokens:
         label.append(int(token))
 
-    return label
-
-
-def get_distance(targets, y_hats, id2char, eos_id):
-    total_dist = 0
-    total_length = 0
-
-    for (target, y_hat) in zip(targets, y_hats):
-        script = label_to_string(target, id2char, eos_id)
-        pred = label_to_string(y_hat, id2char, eos_id)
-
-        dist, length = char_distance(script, pred)
-
-        total_dist += dist
-        total_length += length
-
-    return total_dist, total_length
+    return torch.LongTensor(label)
 
 
 def label_to_string(labels, id2char, eos_id):

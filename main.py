@@ -7,12 +7,14 @@ import math
 from random import random
 from torch import optim
 from package.config import Config
-from package.data_loader import Dataset, load_corpus, DataLoader
 from package.definition import char2id, logger, SOS_token, EOS_token, PAD_token
+from package.data_loader import CustomDataset, load_corpus, CustomDataLoader
 from package.loss import Perplexity
 from package.trainer import supervised_train
 from model import LanguageModel
 
+# Character-level Recurrent Neural Network Language Model implement in Pytorch
+# https://github.com/sooftware/char-rnnlm
 
 if __name__ == '__main__':
     os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # if you use Multi-GPU, delete this line
@@ -26,17 +28,15 @@ if __name__ == '__main__':
         hidden_size=512,
         dropout_p=0.5,
         n_layers=4,
-        batch_size=32,
+        batch_size=12,
         max_epochs=40,
-        wordvec_size=256,
         lr=0.0001,
-        teacher_forcing=1.0,
+        teacher_forcing_ratio=1.0,
         seed=1,
         max_len=428,
         worker_num=1
     )
 
-    random.seed(config.seed)
     torch.manual_seed(config.seed)
     torch.cuda.manual_seed_all(config.seed)
     cuda = config.use_cuda and torch.cuda.is_available()
@@ -45,7 +45,6 @@ if __name__ == '__main__':
     model = LanguageModel(
         n_class=len(char2id),
         n_layers=config.n_layers,
-        wordvec_size=config.wordvec_size,
         hidden_size=config.hidden_size,
         dropout_p=config.dropout_p,
         max_length=config.max_len,
@@ -60,24 +59,23 @@ if __name__ == '__main__':
         param.data.uniform_(-0.08, 0.08)
 
     # Prepare loss
-    weight = torch.ones(len(char2id))
-    perplexity = Perplexity(weight, PAD_token)
-
+    weight = torch.ones(len(char2id)).to(device)
+    perplexity = Perplexity(weight, PAD_token, device)
     optimizer = optim.Adam(model.module.parameters(), lr=config.lr)
 
-    corpus = load_corpus('./data/kor_corpus.csv', encoding='utf-8')
+    corpus = load_corpus('./data/corpus_df.bin')
     total_time_step = math.ceil(len(corpus) / config.batch_size)
 
-    train_dataset = Dataset(corpus, SOS_token, EOS_token, config.batch_size)
+    train_set = CustomDataset(corpus, SOS_token, EOS_token, config.batch_size)
 
     logger.info('start')
     train_begin = time.time()
 
     for epoch in range(config.max_epochs):
         train_queue = queue.Queue(config.worker_num << 1)
-        train_dataset.shuffle()
+        train_set.shuffle()
 
-        train_loader = DataLoader(train_dataset, queue, config.batch_size, 0)
+        train_loader = CustomDataLoader(train_set, train_queue, config.batch_size, 0)
         train_loader.start()
 
         train_loss = supervised_train(
@@ -89,11 +87,19 @@ if __name__ == '__main__':
             optimizer=optimizer,
             device=device,
             print_every=10,
-            teacher_forcing_ratio=config.teacher_forcing,
+            teacher_forcing_ratio=config.teacher_forcing_ratio,
             worker_num=config.worker_num
         )
 
         torch.save(model, "./data/epoch%s.pt" % str(epoch))
         logger.info('Epoch %d (Training) Loss %0.4f' % (epoch, train_loss))
-
         train_loader.join()
+
+        valid_queue = queue.Queue(config.worker_num << 1)
+        valid_loader = CustomDataLoader(valid_set, valid_queue, config.batch_size, 0)
+        valid_loader.start()
+
+        valid_loss = evaluate(model, valid_queue, perplexity, device)
+        valid_loader.join()
+
+        logger.info('Epoch %d (Evaluate) Loss %0.4f' % (epoch, valid_loss))

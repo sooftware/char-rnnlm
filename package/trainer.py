@@ -22,7 +22,7 @@ def supervised_train(model, queue, perplexity, optimizer, device, print_every,
         if inputs.shape[0] == 0:
             # empty feats means closing one loader
             worker_num -= 1
-            logger.debug('left train_loader: %d' % (worker_num))
+            logger.debug('left train_loader: %d' % worker_num)
 
             if worker_num == 0:
                 break
@@ -62,7 +62,7 @@ def supervised_train(model, queue, perplexity, optimizer, device, print_every,
             logger.info('timestep: {:4d}/{:4d}, perplexity: {:.4f}, elapsed: {:.2f}s {:.2f}m {:.2f}h'.format(
                 time_step,
                 total_time_step,
-                epoch_loss_total / print_every,
+                print_loss_total / print_every,
                 elapsed, epoch_elapsed, train_elapsed
             ))
             print_loss_total = 0
