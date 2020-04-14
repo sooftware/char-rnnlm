@@ -45,6 +45,7 @@ if __name__ == '__main__':
     model = LanguageModel(
         n_class=len(char2id),
         n_layers=config.n_layers,
+        rnn_cell='lstm',
         hidden_size=config.hidden_size,
         dropout_p=config.dropout_p,
         max_length=config.max_len,
