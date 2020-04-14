@@ -18,7 +18,7 @@ class LanguageModel(nn.Module):
         self.out = nn.Linear(self.hidden_size, n_class)
         self.device = device
 
-    def forward_step(self, input, hidden, cell, function=F.log_softmax):
+    def forward_step(self, input, hidden, function=F.log_softmax):
         """ forward one time step """
         batch_size = input.size(0)
         seq_length = input.size(1)
@@ -29,12 +29,12 @@ class LanguageModel(nn.Module):
         if self.training:
             self.rnn.flatten_parameters()
 
-        output, hidden = self.rnn(embedded, (hidden, cell))
+        output, hidden = self.rnn(embedded, hidden)
 
         predicted_softmax = function(self.out(output.contiguous().view(-1, self.hidden_size)), dim=1)
         predicted_softmax = predicted_softmax.view(batch_size, seq_length, -1)
 
-        return predicted_softmax, hidden, cell
+        return predicted_softmax, hidden
 
     def forward(self, inputs, teacher_forcing_ratio=1.0, function=F.log_softmax):
         batch_size = inputs.size(0)
@@ -43,15 +43,13 @@ class LanguageModel(nn.Module):
         outputs = list()
         use_teacher_forcing = True if random.random() < teacher_forcing_ratio else False
 
-        hidden = torch.zeros(self.n_layers, batch_size, self.hidden_size).to(self.device)
-        cell = torch.zeros(self.n_layers, batch_size, self.hidden_size).to(self.device)
+        hidden = self._init_state(batch_size)
 
         if use_teacher_forcing:
             inputs = inputs[inputs != self.eos_id].view(batch_size, -1)
-            predicted_softmax, hidden, cell = self.forward_step(
+            predicted_softmax, hidden = self.forward_step(
                 input=inputs,
                 hidden=hidden,
-                cell=cell,
                 function=function
             )
 
@@ -62,10 +60,9 @@ class LanguageModel(nn.Module):
         else:
             input = inputs[:, 0].unsqueeze(1)
             for di in range(max_length):
-                predicted_softmax, hidden, cell = self.forward_step(
+                predicted_softmax, hidden = self.forward_step(
                     input=input,
                     hidden=hidden,
-                    cell=cell,
                     function=function
                 )
 
@@ -74,6 +71,17 @@ class LanguageModel(nn.Module):
                 input = outputs[-1].topk(1)[1]
 
         return outputs
+
+    def _init_state(self, batch_size):
+        if isinstance(self.rnn, nn.LSTM):
+            h_0 = torch.zeros(self.n_layers, batch_size, self.hidden_size).to(self.device)
+            c_0 = torch.zeros(self.n_layers, batch_size, self.hidden_size).to(self.device)
+            hidden = (h_0, c_0)
+
+        else:
+            hidden = torch.zeros(self.n_layers, batch_size, self.hidden_size).to(self.device)
+
+        return hidden
 
     def flatten_parameters(self):
         self.rnn.flatten_parameters()

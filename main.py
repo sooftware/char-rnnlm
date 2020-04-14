@@ -28,7 +28,7 @@ if __name__ == '__main__':
         hidden_size=512,
         dropout_p=0.5,
         n_layers=4,
-        batch_size=12,
+        batch_size=16,
         max_epochs=40,
         lr=0.0001,
         teacher_forcing_ratio=1.0,
@@ -66,7 +66,8 @@ if __name__ == '__main__':
     corpus = load_corpus('./data/corpus_df.bin')
     total_time_step = math.ceil(len(corpus) / config.batch_size)
 
-    train_set = CustomDataset(corpus, SOS_token, EOS_token, config.batch_size)
+    train_set = CustomDataset(corpus[:-10000], SOS_token, EOS_token, config.batch_size)
+    valid_set = CustomDataset(corpus[-10000:], SOS_token, EOS_token, config.batch_size)
 
     logger.info('start')
     train_begin = time.time()

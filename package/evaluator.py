@@ -23,7 +23,7 @@ def evaluate(model, queue, perplexity, device):
             targets = targets.to(device)
 
             model.module.flatten_parameters()
-            outputs = model(inputs, teacher_forcing_ratio=teacher_forcing_ratio)
+            outputs = model(inputs, teacher_forcing_ratio=0.0)
 
             loss.reset()
             for step, step_output in enumerate(outputs):
