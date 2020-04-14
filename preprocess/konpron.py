@@ -1,5 +1,3 @@
-
-
 class KoNPron:
     def __init__(self):
         self.base_digit = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -11,22 +9,34 @@ class KoNPron:
         self.spoke_tens = ['', '열', '스물', '서른', '마흔', '쉰', '예순', '일흔', '여든', '아흔']
         self.sentence = str()
 
-    def detect(self, sentence):
+    def _detect(self, sentence):
         self.sentence = sentence
         detection_data = list()
         tmp = str()
 
         total_len = len(sentence)
         point_count = 0
+        continuous_count = 0
         digit_type = 'vanilla'
+
         detected = False
+        zero_started = False
 
         for idx, char in enumerate(sentence):
             if char in self.base_digit:
                 if not detected:
                     detected = True
+                    if char is '0':
+                        zero_started = True
                 tmp += char
+                continuous_count += 1
+                if zero_started and continuous_count > 8:
+                    digit_type = 'telephone/none'
+                if continuous_count > 20:
+                    digit_type = 'enormous/none'
             else:
+                continous_count = 0
+                zero_started = False
                 if char == ',':
                     if idx + 1 < total_len and idx > 0:
                         if sentence[idx - 1] in self.base_digit and sentence[idx + 1] in self.base_digit:
@@ -52,7 +62,7 @@ class KoNPron:
                 elif char in self.super_digit:
                     if idx > 0:
                         if sentence[idx - 1] in self.base_digit or sentence[idx - 1] in self.super_digit:
-                            if 'square' not in digit_type:
+                            if not 'square' in digit_type:
                                 digit_type += '/square'
                             tmp += char
                         else:
@@ -73,11 +83,14 @@ class KoNPron:
                         tmp = str()
                         digit_type = 'vanilla'
                         point_count = 0
+                        continuous_count = 0
                     else:
                         if tmp:
                             detection_data.append((digit_type, tmp))
                             tmp = str()
                             digit_type = 'vanilla'
+                            point_count = 0
+                            continuous_count = 0
 
         if detected:
             if '/' not in digit_type:
@@ -88,7 +101,7 @@ class KoNPron:
             detection_data.append((digit_type, tmp))
         return detection_data
 
-    def preprocess(self, detection_data):
+    def _preprocess(self, detection_data):
         preprocessed_data = list()
 
         for digit_type, target in detection_data:
@@ -98,7 +111,6 @@ class KoNPron:
             target_len = len(target)
 
             main_type, sub_type = digit_type.split('/')
-
             if main_type == 'exception':
                 return None
 
@@ -117,6 +129,12 @@ class KoNPron:
                 for frag in target:
                     target_seq.append(frag)
                     reading_method.append('individual')
+                preprocessed_data.append((reading_method, target_seq, original))
+
+            if main_type == 'telephone' or main_type == 'enormous':
+                target = target.replace('0', '_')
+                target_seq.append(target)
+                reading_method.append('individual')
                 preprocessed_data.append((reading_method, target_seq, original))
 
             if sub_type != 'none':
@@ -189,7 +207,7 @@ class KoNPron:
 
         return preprocessed_data
 
-    def read(self, preprocessed_data, mode='informal'):
+    def _read(self, preprocessed_data, mode='informal'):
         def literal_read(self, frag, mode='informal'):
             korean = str()
             tmp = str()
@@ -231,7 +249,10 @@ class KoNPron:
         def individual_read(self, frag):
             korean = str()
             for digit in frag:
-                korean += self.literal[int(digit)]
+                if digit == '_':
+                    korean += '공'
+                else:
+                    korean += self.literal[int(digit)]
             return korean
 
         result = self.sentence
@@ -254,3 +275,6 @@ class KoNPron:
                     readed += ' 승'
             result = result.replace(original, readed, 1)
         return result
+
+    def convert(self, sentence):
+        return self._read(self._preprocess(self._detect(sentence)))
