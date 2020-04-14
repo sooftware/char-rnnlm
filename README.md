@@ -36,7 +36,7 @@ We follow PEP-8 for code style. Especially the style of docstrings is important 
 ## Reference
   
 [[1] IBM pytorch-seq2seq](https://github.com/IBM/pytorch-seq2seq)  
-[[2] Character-unit based Korean Speech Recognition](https://github.com/sooftware/End-to-End-Korean-Speech-Recognition)  
+[[2] Character-unit based End-to-End Korean Speech Recognition](https://github.com/sooftware/End-to-End-Korean-Speech-Recognition)  
   
 ### License  
 ```
