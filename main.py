@@ -9,6 +9,7 @@ from torch import optim
 from package.config import Config
 from package.definition import char2id, logger, SOS_token, EOS_token, PAD_token
 from package.data_loader import CustomDataset, load_corpus, CustomDataLoader
+from package.evaluator import evaluate
 from package.loss import Perplexity
 from package.trainer import supervised_train
 from model import LanguageModel
@@ -20,8 +21,8 @@ if __name__ == '__main__':
     os.environ["CUDA_LAUNCH_BLOCKING"] = "1"  # if you use Multi-GPU, delete this line
     logger.info("device : %s" % torch.cuda.get_device_name(0))
     logger.info("CUDA is available : %s" % (torch.cuda.is_available()))
-    logger.info("CUDA version : %s" % (torch.version.cuda))
-    logger.info("PyTorch version : %s" % (torch.__version__))
+    logger.info("CUDA version : %s" % torch.version.cuda)
+    logger.info("PyTorch version : %s" % torch.__version__)
 
     config = Config(
         use_cuda=True,
@@ -82,6 +83,7 @@ if __name__ == '__main__':
         train_loss = supervised_train(
             model=model,
             queue=train_queue,
+            epoch=epoch,
             total_time_step=total_time_step,
             train_begin=train_begin,
             perplexity=perplexity,

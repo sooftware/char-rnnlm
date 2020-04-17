@@ -5,7 +5,7 @@ from package.definition import logger
 train_step_result = {'loss': [], 'cer': []}
 
 
-def supervised_train(model, queue, perplexity, optimizer, device, print_every,
+def supervised_train(model, queue, perplexity, optimizer, device, print_every, epoch,
                      teacher_forcing_ratio, worker_num, total_time_step, train_begin):
     print_loss_total = 0  # Reset every print_every
     epoch_loss_total = 0  # Reset every epoch
@@ -67,6 +67,9 @@ def supervised_train(model, queue, perplexity, optimizer, device, print_every,
             ))
             print_loss_total = 0
             begin = time.time()
+
+        if time_step % 50000 == 0:
+            torch.save(model, "./data/epoch%s_%s.pt" % (str(epoch), str(time_step)))
 
     logger.info('train() completed')
 
