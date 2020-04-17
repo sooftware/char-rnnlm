@@ -1,0 +1,3 @@
+docs/* linguist-vendored
+sphinx/* linguist-vendored
+preprocess/* linguist-vendored

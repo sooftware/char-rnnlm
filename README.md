@@ -11,6 +11,17 @@ We appreciate any kind of feedback or contribution.
   
 <img src="https://user-images.githubusercontent.com/42150335/79066605-39189c00-7cf4-11ea-8d92-971a360f3644.png" width=620>  
   
+## Installation
+This project recommends Python 3.7 or higher.   
+I recommend creating a new virtual environment for this project (using virtualenv or conda).  
+
+### Prerequisites
+  
+* Numpy: `pip install numpy` (Refer [here](https://github.com/numpy/numpy) for problem installing Numpy).
+* Pandas: `pip install pandas` (Refer [here](https://github.com/pandas-dev/pandas) for problem installing Pandas)
+* PyTorch: Refer to [PyTorch website](http://pytorch.org/) to install the version w.r.t. your environment.
+  
+  
 ## Troubleshoots and Contributing
   
 If you have any questions, bug reports, and feature requests, please [open an issue](https://github.com/sooftware/RNN-LM/issues) on Github.  
@@ -25,7 +36,8 @@ We follow PEP-8 for code style. Especially the style of docstrings is important 
 ## Reference
   
 [[1] IBM pytorch-seq2seq](https://github.com/IBM/pytorch-seq2seq)  
-[[2] Character-unit based Korean Speech Recognition](https://github.com/sooftware/End-to-End-Korean-Speech-Recognition)  
+[[2] Character-unit based End-to-End Korean Speech Recognition](https://github.com/sooftware/End-to-End-Korean-Speech-Recognition)  
+[[3] 「An analysis of incorporating an external language model into a sequence-to-sequence model」 Paper](https://arxiv.org/abs/1712.01996)  
   
 ### License  
 ```
