@@ -39,27 +39,11 @@ We follow PEP-8 for code style. Especially the style of docstrings is important 
 [[2] Character-unit based End-to-End Korean Speech Recognition](https://github.com/sooftware/End-to-End-Korean-Speech-Recognition)  
 [[3] 「An analysis of incorporating an external language model into a sequence-to-sequence model」 Paper](https://arxiv.org/abs/1712.01996)  
   
-### License  
+### Citing 
 ```
-MIT License
-
-Copyright (c) 2020 Kai.Lib
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+source_code{
+  title={character recurrent neural network},
+  author={Soohwan Kim, Seyoung Bae, Cheolhwang Won},
+  year={2020}
+}
 ```
