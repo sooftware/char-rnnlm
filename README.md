@@ -42,7 +42,7 @@ We follow PEP-8 for code style. Especially the style of docstrings is important 
 ### Citing 
 ```
 source_code{
-  title={character recurrent neural network},
+  title={Character RNN language model},
   author={Soohwan Kim, Seyoung Bae, Cheolhwang Won},
   year={2020}
 }
