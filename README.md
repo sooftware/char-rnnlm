@@ -39,11 +39,7 @@ We follow PEP-8 for code style. Especially the style of docstrings is important 
 [[2] Character-unit based End-to-End Korean Speech Recognition](https://github.com/sooftware/End-to-End-Korean-Speech-Recognition)  
 [[3] 「An analysis of incorporating an external language model into a sequence-to-sequence model」 Paper](https://arxiv.org/abs/1712.01996)  
   
-### Citing 
-```
-source_code{
-  title={Character RNN language model},
-  author={Soohwan Kim, Seyoung Bae, Cheolhwang Won},
-  year={2020}
-}
-```
+## Author
+  
+* Soohwan Kim [@sooftware](https://github.com/sooftware)
+* Contacts: sh951011@gmail.com
